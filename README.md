@@ -1,6 +1,6 @@
 # 趣味换脸小程序
 
-小程序二维码：
+微信扫一扫或长按识别小程序码：
 
 <img src="https://github.com/planet0104/miniprogram-faceoff/blob/master/minicode.jpg" />
 
