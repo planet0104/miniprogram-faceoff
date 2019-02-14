@@ -1,0 +1,20 @@
+{
+  "pages":[
+    "pages/index/index"
+  ],
+  "workers": "workers",
+  "subpackages": [
+    {
+      "root": "faceoff",
+      "pages": [
+        "pages/index/index"
+      ]
+    }
+  ],
+  "window":{
+    "backgroundTextStyle":"light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "趣图换脸",
+    "navigationBarTextStyle":"black"
+  }
+}

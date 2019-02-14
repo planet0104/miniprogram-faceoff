@@ -1,0 +1,64 @@
+/**index.wxss**/
+.tip-text{
+  position: absolute;
+  left: 280rpx;
+  top: 694rpx;
+  z-index: 1;
+  font-size: 30rpx;
+  width: 250rpx;
+  color: #3d3d3d;
+}
+
+.image-name-label{
+  display:inline-block;
+  width:190rpx;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.tip-text-image{
+  position: absolute;
+  top: 680rpx;
+  width: 300rpx;
+  left: 240rpx;
+}
+
+.label-container{
+  position: absolute;
+}
+.label-container movable-view text{
+  text-align: center;
+  border-radius: 10rpx;
+  background: rgba(105, 105, 105, 0.3);
+  padding: 10rpx;
+  font-size: 18px;
+}
+
+.shaer-app{
+  position: absolute;
+  top: 150rpx;
+  left: 22rpx;
+  display: block;
+  width: 710rpx;
+  background: #fff;
+  height: 800rpx;
+  z-index: 9;
+  border: solid 1px #888;
+  border-radius: 70rpx;
+}
+.shaer-app image{
+  width: 500rpx;
+  height: 500rpx;
+  margin-left: 100rpx;
+  margin-top: 10%;
+}
+.shaer-app .share-tip{
+  display: block;
+  padding: 10rpx;
+  text-align: center;
+}
+.shaer-app button{
+  display: block;
+  min-width: 260rpx;
+}

@@ -1,0 +1,86 @@
+<!--index.wxml-->
+
+<!-- 浮动：分享小程序/二维码 -->
+<view class='shaer-app' wx:if="{{showShare}}">
+  <image src='/static/code.jpg'></image>
+  <view class='share-tip'>扫一扫小程序码</view>
+  <view style='display:flex'>
+    <button open-type="share">转发给朋友</button>
+    <button bindtap='hideShare'>关闭</button>
+  </view>
+</view>
+
+<movable-area scale-area="true" wx-if="{{moveArea.show}}" class='label-container' style='left:{{moveArea.left+"px"}};top:{{moveArea.top+"px"}};width:{{moveArea.width+"px"}};height:{{moveArea.height+"px"}}' wx-if='{{showLabel}}'>
+    <movable-view x='{{moveArea.labelLeft+"px"}}' y='{{moveArea.labelTop+"px"}}' bindchange="onMovableChange" bindscale="onMovableScale" id='movable-view' style='width:auto;height:auto;' direction="all" scale="true"><text style='color:{{moveArea.color}};}'>点击添加文字</text></movable-view>
+</movable-area>
+<canvas hidden='true' canvas-id='text-canvas' binderror="canvasIdErrorCallback" style='position:absolute; left:0; top:0; width:200px;height:200px;'></canvas>
+
+<canvas canvas-id='scale-canvas' binderror="canvasIdErrorCallback" style='position:absolute; left:-720px; top:-720px; width:720px;height:720px;'></canvas>
+
+<view class="container">
+  <view class='canvas'>
+    <image id='img-show' mode='widthFix' src='{{convertImageData}}'></image>
+  </view>
+  <view class='slider-label'>
+      <image src='/static/icon_rotate.png'></image><slider backgroundColor="#777" activeColor='#777' max='80' min='1' value='{{dtRotateValue}}' bindchange='rotateHead'></slider>
+  </view>
+  <view class='slider-label'>
+    <image src='/static/icon_scale.png'></image>
+    <slider backgroundColor="#777" activeColor='#777' max='60' min='1' value='{{dtScaleValue}}' bindchange='scaleHead'></slider>
+  </view>
+  <view class="control">
+    <view class='img-button'>
+      <button class='img-box' data-type='base' bindtap='openChooseDialog'>
+        <view class='img-box-inner'>
+          <image mode='widthFix' src='{{currentBaseImagePath}}'></image>
+        </view>
+      </button>
+      <text class='image-name-label'>底图: {{currentBaseImageName}}</text>
+    </view>
+    <view class='img-button img-button-replace'>
+      <button class='img-box'  data-type='front' bindtap='openChooseDialog'>
+        <view class='img-box-inner'>
+          <image mode='widthFix' src='{{currentFrontImagePath}}'></image>
+        </view>
+      </button>
+      <text class='image-name-label'>前景: {{currentFrontImageName}}</text>
+    </view>
+    <view class='img-button img-button-save'>
+      <button class='img-box' bindtap='saveImage'>
+        <view class='img-box-inner'>
+          <image mode='widthFix' src='/static/download.png'></image>
+        </view>
+      </button>
+      <text>保存图片</text>
+    </view>
+    <view class='img-button img-button-save'>
+      <button class='img-box' bindtap='showShare'>
+        <view class='img-box-inner'>
+          <image mode='widthFix' src='/static/icon_share.png'></image>
+        </view>
+      </button>
+      <text>分享小程序</text>
+    </view>
+  </view>
+</view>
+
+<text class='tip-text' wx-if='{{showSelectFrontTip}}'>点击这里选择一张带头像的图片</text>
+<image class='tip-text-image' mode='widthFix' src='/static/tip.png' wx-if='{{showSelectFrontTip}}'></image>
+
+<view class='select-dialog' wx-if='{{showChooseDialog}}'>
+  <view class='select-dialog-mask'></view>
+  <view class='select-dialog-content' style='top:{{selectDialogContentTop}};'>
+    <text class='title' wx-if='{{showPresetImages}}'>预设照片</text>
+    <text class='title title2' wx-if='{{!showPresetImages}}'>替换原图中的头像，请选择一张带有正面头像的照片</text>
+    <scroll-view scroll-y="true" wx-if='{{showPresetImages}}'>
+      <image bindtap='selectPresetImage' data-path='/static/preset/Mona_Lisa.jpg'  mode='widthFix' src='/static/preset/Mona_Lisa.jpg'></image>
+      <image bindtap='selectPresetImage'  data-path='/static/preset/Grant_Wood_American_Gothic.jpg'  mode='widthFix' src='/static/preset/Grant_Wood_American_Gothic.jpg'></image>
+      <image bindtap='selectPresetImage'  data-path='/static/preset/Amedeo_Modigliani.jpg'  mode='widthFix' src='/static/preset/Amedeo_Modigliani.jpg'></image>
+      <image bindtap='selectPresetImage'  data-path='/static/preset/Pierre_Auguste_Renoir.jpg'  mode='widthFix' src='/static/preset/Pierre_Auguste_Renoir.jpg'></image>
+      <image bindtap='selectPresetImage'  data-path='/static/preset/dt_mic.jpg'  mode='widthFix' src='/static/preset/dt_mic.jpg'></image>
+    </scroll-view>
+    <button data-type='album' class='m' bindtap='chooseImage'>选择照片</button>
+    <button data-type='camera' class='m' bindtap='chooseImage'>拍摄照片</button>
+    <button bindtap='closeChooseDialog'>关闭</button>
+  </view>
+</view>

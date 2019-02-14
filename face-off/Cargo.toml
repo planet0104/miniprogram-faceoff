@@ -1,0 +1,29 @@
+[package]
+name = "face-off"
+version = "0.1.0"
+authors = ["planet0104 <planet0104@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+rustface = { path = "../rustface" }
+lazy_static = "1.2.0"
+conv = "*"
+itertools = "*"
+
+[dependencies.image]
+version = "0.21.0"
+default-features = false
+features  = ["jpeg", "png_codec"]
+
+[dependencies.stdweb]
+version = "0.4.13"
+optional = true
+
+[features]
+default = ["asmjs"]
+asmjs = ["stdweb"]
+
+[profile.release]
+lto = true
+opt-level = 's'
+panic = 'abort'
