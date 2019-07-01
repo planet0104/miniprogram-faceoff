@@ -1,4 +1,7 @@
 /**index.wxss**/
+page{
+  background: #1e756d;
+}
 .tip-text{
   position: absolute;
   left: 280rpx;
@@ -24,15 +27,28 @@
   left: 240rpx;
 }
 
-.label-container{
-  position: absolute;
+.label-tip{
+  background: rgba(105, 105, 105, 0.6);
+  position:absolute;
+  color:#fff;
+  margin-top: -20rpx;
+  font-size:20rpx;
+  padding: 5rpx;
+  z-index: 2;
+  border-radius: 15rpx;
+  opacity: 0.7;
 }
-.label-container movable-view text{
+
+#movable-view{
+  position: absolute;
   text-align: center;
-  border-radius: 10rpx;
   background: rgba(105, 105, 105, 0.3);
-  padding: 10rpx;
-  font-size: 18px;
+  /* border-bottom: solid 1rpx #000;
+  border-left: solid 1rpx #000;
+  padding-left: 3rpx;
+  padding-bottom: 3rpx; */
+  padding-left: 10rpx;
+  z-index: 2;
 }
 
 .shaer-app{
@@ -61,4 +77,99 @@
 .shaer-app button{
   display: block;
   min-width: 260rpx;
+}
+
+
+.text_color{
+  font-size: 32rpx;
+}
+
+.picker-arrow{
+  width: 0;
+  height: 0;
+  border-width: 20rpx;
+  border-style: solid;
+  border-color: #c6c6c6 transparent transparent transparent;
+  margin-top: 20rpx;
+}
+.picker-text-parent{
+  border: 1px solid #c6c6c6; 
+  border-radius: 20rpx;
+  display: flex;
+  padding-left: 20rpx;
+  padding-right: 20rpx;
+}
+
+.input-view input{
+  margin-top: 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.input-view{
+  line-height: 70rpx;
+  font-size: 18px;
+  position: absolute;
+  top:84vw;
+  width:90%;
+  padding-bottom: 20rpx;
+  z-index: 20;
+  border: solid 1px #b2b2b2;
+  background: rgb(253, 253, 253);
+  box-shadow:0px 0px 24rpx #333333;
+  margin-left: 3%;
+  margin-right: 3%;
+  margin-top: 2%;
+  border-radius: 20rpx;
+  padding-top: 50rpx;
+  padding-left: 40rpx;
+}
+
+.move-arrow{
+  box-shadow:0px 0px 24rpx #333333;
+  border-radius: 30rpx;
+  width:60rpx;
+  height:60rpx;
+  position:absolute;
+}
+.move-arrow:active{
+  box-shadow:0px 10rpx 30rpx #222;
+  border-radius: 26rpx;
+}
+
+#ad-view{
+  margin-top: 8rpx;
+  margin-left: 36rpx;
+  margin-right: 36rpx;
+  /* border-right: solid 17rpx #ccc;
+  border-left: solid 17rpx #ccc;
+  border-top: solid 17rpx rgb(253, 253, 253); */
+  /* border-bottom: solid 3rpx rgb(253, 253, 253); */
+  box-shadow:0px 10px 30rpx #111;
+  border-radius: 5rpx;
+}
+
+.top-border{
+  background-color: #b18f1c;
+  border-radius: 70rpx 40rpx 70rpx 30rpx;
+  box-shadow:0px 0px 24rpx #333333;
+  height: auto;
+  width: auto;
+  margin-top: 36rpx;
+  display: block;
+}
+
+.top-border-0{
+  background-color: #ffe3e9;
+  border-radius: 70rpx 40rpx 70rpx 30rpx;
+  box-shadow:0px 0px 24rpx #a57978 inset,0px 0px 24rpx #a57978 inset,0px 0px 24rpx #a57978 inset;
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+#image-canvas{
+  margin: 20rpx;
+  border-radius: 70rpx 40rpx 70rpx 30rpx;
+  display: block;
+  background-color: #b6dfe1;
+  box-shadow:0px 0px 24rpx #a57978,0px 0px 24rpx #a57978,0px 0px 24rpx #a57978;
 }

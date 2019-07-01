@@ -13,13 +13,15 @@
 		"uglifyFileName": false
 	},
 	"compileType": "miniprogram",
-	"libVersion": "2.5.1",
-	"appid": "wx69d023c4e39979c1",
+	"libVersion": "2.2.3",
+	"appid": "",
 	"projectname": "faceoff",
 	"debugOptions": {
 		"hidedInDevtools": []
 	},
 	"isGameTourist": false,
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
 	"condition": {
 		"search": {
 			"current": -1,

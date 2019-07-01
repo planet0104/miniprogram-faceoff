@@ -1,29 +1,26 @@
 [package]
 name = "face-off"
-version = "0.1.0"
+version = "0.6.0"
 authors = ["planet0104 <planet0104@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-rustface = { path = "../rustface" }
-lazy_static = "1.2.0"
-conv = "*"
-itertools = "*"
 
-[dependencies.image]
-version = "0.21.0"
+[target.'cfg(windows)'.dependencies]
+image = "0.21.2"
+
+[target.'cfg(any(target_arch = "asmjs", target_arch = "wasm32"))'.dependencies]
+
+[target.'cfg(any(target_arch = "asmjs", target_arch = "wasm32"))'.dependencies.image]
+version = "0.21.2"
 default-features = false
-features  = ["jpeg", "png_codec"]
-
-[dependencies.stdweb]
-version = "0.4.13"
-optional = true
-
-[features]
-default = ["asmjs"]
-asmjs = ["stdweb"]
+features  = []
 
 [profile.release]
 lto = true
 opt-level = 's'
+codegen-units = 1
 panic = 'abort'
+
+[build-dependencies]
+cc = "1.0"

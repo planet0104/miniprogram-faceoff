@@ -10,56 +10,100 @@
   </view>
 </view>
 
-<movable-area scale-area="true" wx-if="{{moveArea.show}}" class='label-container' style='left:{{moveArea.left+"px"}};top:{{moveArea.top+"px"}};width:{{moveArea.width+"px"}};height:{{moveArea.height+"px"}}' wx-if='{{showLabel}}'>
-    <movable-view x='{{moveArea.labelLeft+"px"}}' y='{{moveArea.labelTop+"px"}}' bindchange="onMovableChange" bindscale="onMovableScale" id='movable-view' style='width:auto;height:auto;' direction="all" scale="true"><text style='color:{{moveArea.color}};}'>点击添加文字</text></movable-view>
-</movable-area>
-<canvas hidden='true' canvas-id='text-canvas' binderror="canvasIdErrorCallback" style='position:absolute; left:0; top:0; width:200px;height:200px;'></canvas>
+<view hidden="{{isInputTextHidden}}" class='input-view'>
+  <view style='display:flex'>
+    <text>文字颜色：</text>
+      <picker class="text_color" mode="selector" value="{{textColorId}}" bindchange="bindTextColorChange" range="{{textColorArray}}">
+      <view class='picker-text-parent'>
+      <text>{{textColor}}</text>
+      <view class='picker-arrow'></view>
+      </view>
+    </picker>
+  </view>
+  <view>
+    <text>文字大小：</text>
+    <slider step='1' style='width:300rpx;display:inline-block;' backgroundColor="#777" activeColor='#777' max='90' min='10' value='{{labelTextSize}}' bindchange='labelTextSizeChange'></slider>
+  </view>
+  <input bindinput="bindText" placeholder='输入文字内容'></input>
+  <view style='display:flex'>
+    <button bindtap='clearText' style='min-width:200rpx;'>清除</button>
+    <button bindtap='setText' style='min-width:200rpx;'>确定</button>
+  </view>
+</view>
 
-<canvas canvas-id='scale-canvas' binderror="canvasIdErrorCallback" style='position:absolute; left:-720px; top:-720px; width:720px;height:720px;'></canvas>
+<text wx-if='{{showLabel}}' id='movable-view' style='color:{{labelColor}};left:{{labelLeft+"px"}};top:{{labelTop+"px"}};width:auto;height:auto;font-size:{{labelTextSize+"rpx"}}' bindtap='showInputText'>{{labelText}}</text>
+<view class='label-tip' wx-if='{{showLabelTip}}' style='left:{{labelTipLeft+"px"}};top:{{labelTipTop+"px"}};'>点击图片任意位置添加文字</view>
+
+<canvas canvas-id='scale-canvas' binderror="canvasIdErrorCallback" style='position:absolute; left:-1200px; top:-2000px; width:1200px;height:2000px;'></canvas>
 
 <view class="container">
-  <view class='canvas'>
-    <image id='img-show' mode='widthFix' src='{{convertImageData}}'></image>
+  <view class='canvas' id='img-show-box'>
+  <view class='top-border'>
+    <view class='top-border-0'>
+          <image mode='scaleToFill' bindload="onCanvasImageLoad" bindtap="onImageTouch" id='image-canvas' src='{{convertImageData}}' style='width:{{imageCanvasContextWidth+"px"}}; height:{{imageCanvasContextHeight+"px"}};'></image>
+          <image mode='aspectFill' wx-if='{{showUserHeadImage}}' src='{{userHeadImageData}}' style='position:absolute;left:{{userFaceRect.x+"px"}};top:{{userFaceRect.y+"px"}}; width:{{userFaceRect.width+"px"}};height:{{userFaceRect.height+"px"}}; transform:rotate({{userFaceRectRotate+"deg"}});margin-left:{{imageTransX+"px"}};margin-top:{{imageTransY+"px"}}'></image>
+          <view style='display:none;position:absolute;background:rgba(255,255,255, 0.5);left:{{imageBoxRect.left+"px"}};top:{{imageBoxRect.top+"px"}}; width:{{imageBoxRect.width+"px"}};height:{{imageBoxRect.height+"px"}};'></view>
+    </view>
   </view>
-  <view class='slider-label'>
-      <image src='/static/icon_rotate.png'></image><slider backgroundColor="#777" activeColor='#777' max='80' min='1' value='{{dtRotateValue}}' bindchange='rotateHead'></slider>
+  
+  <image src='/static/arrow_left.png' bindtap='moveLeft' class='move-arrow' style='right:95rpx;top:525rpx;'></image>
+  <image src='/static/arrow_right.png' bindtap='moveRight' class='move-arrow' style='right:0rpx;top:525rpx;'></image>
+  <image src='/static/arrow_up.png' bindtap='moveUp' class='move-arrow' style='right:47rpx;top:467rpx;'></image>
+  <image src='/static/arrow_bottom.png' bindtap='moveDown' class='move-arrow' style='right:47rpx;top:583rpx;'></image>
+  
   </view>
-  <view class='slider-label'>
-    <image src='/static/icon_scale.png'></image>
-    <slider backgroundColor="#777" activeColor='#777' max='60' min='1' value='{{dtScaleValue}}' bindchange='scaleHead'></slider>
+  <view style='display:flex;padding-top:40rpx;'>
+    <view class='slider-label'>
+      <image src='/static/icon_rotate.png'></image>
+      <slider backgroundColor="#79c66b" activeColor='#79c66b' max='120' min='1' value='{{dtRotateValue}}' block-size="26" bindchange='rotateHead' block-color="#f2f6f5"></slider>
+    </view>
+    <view class='slider-label'>
+      <image src='/static/icon_scale.png'></image>
+      <slider backgroundColor="#79c66b" block-color="#f2f6f5" activeColor='#79c66b' max='60' min='1' value='{{dtScaleValue}}' bindchange='scaleHead' block-size="26"></slider>
+    </view>
+    <image src='/static/icon_color_level.png' style='margin-top:10rpx;width:65rpx;height:65rpx;'></image>
+    <picker bindchange="bindColorLevelChange" value="{{5}}" range="{{colorLevels}}">
+      <view class="picker" style='padding:10rpx;background:rgba(0,0,0,0.0); height:40rpx;width:40rpx; margin-left:-60rpx;margin-top:10rpx;'>
+        
+      </view>
+    </picker>
+    <view style='padding-top:20rpx;padding-left:5rpx;'>
+      <text style='color:white;display:block;color:#ddd;font-size:17rpx;'>色(明)</text>
+      <text style='color:white;display:block;color:#ddd;font-size:17rpx;'>阶(暗)</text>
+    </view>
   </view>
   <view class="control">
     <view class='img-button'>
-      <button class='img-box' data-type='base' bindtap='openChooseDialog'>
+      <View class='img-box img-box-base' data-type='base' bindtap='openChooseDialog'>
         <view class='img-box-inner'>
-          <image mode='widthFix' src='{{currentBaseImagePath}}'></image>
+          <image bindload='onSmallBaseImageLoad' mode='widthFix' src='{{currentBaseImagePath}}'></image>
         </view>
-      </button>
-      <text class='image-name-label'>底图: {{currentBaseImageName}}</text>
+      </View>
+      <text class='name-label image-name-label'>{{currentBaseImageName}}</text>
     </view>
     <view class='img-button img-button-replace'>
-      <button class='img-box'  data-type='front' bindtap='openChooseDialog'>
+      <View class='img-box img-box-front'  data-type='front' bindtap='openChooseDialog'>
         <view class='img-box-inner'>
           <image mode='widthFix' src='{{currentFrontImagePath}}'></image>
         </view>
-      </button>
-      <text class='image-name-label'>前景: {{currentFrontImageName}}</text>
+      </View>
+      <text class='name-label image-name-label'>{{currentFrontImageName}}</text>
     </view>
     <view class='img-button img-button-save'>
-      <button class='img-box' bindtap='saveImage'>
+      <View class='img-box img-box-save' bindtap='saveImage'>
         <view class='img-box-inner'>
           <image mode='widthFix' src='/static/download.png'></image>
         </view>
-      </button>
-      <text>保存图片</text>
+      </View>
+      <text class='name-label'> 保存图片</text>
     </view>
     <view class='img-button img-button-save'>
-      <button class='img-box' bindtap='showShare'>
+      <View class='img-box img-box-share' bindtap='showShare'>
         <view class='img-box-inner'>
           <image mode='widthFix' src='/static/icon_share.png'></image>
         </view>
-      </button>
-      <text>分享小程序</text>
+      </View>
+      <text class='name-label'>分享小程序</text>
     </view>
   </view>
 </view>
@@ -73,14 +117,18 @@
     <text class='title' wx-if='{{showPresetImages}}'>预设照片</text>
     <text class='title title2' wx-if='{{!showPresetImages}}'>替换原图中的头像，请选择一张带有正面头像的照片</text>
     <scroll-view scroll-y="true" wx-if='{{showPresetImages}}'>
-      <image bindtap='selectPresetImage' data-path='/static/preset/Mona_Lisa.jpg'  mode='widthFix' src='/static/preset/Mona_Lisa.jpg'></image>
-      <image bindtap='selectPresetImage'  data-path='/static/preset/Grant_Wood_American_Gothic.jpg'  mode='widthFix' src='/static/preset/Grant_Wood_American_Gothic.jpg'></image>
-      <image bindtap='selectPresetImage'  data-path='/static/preset/Amedeo_Modigliani.jpg'  mode='widthFix' src='/static/preset/Amedeo_Modigliani.jpg'></image>
-      <image bindtap='selectPresetImage'  data-path='/static/preset/Pierre_Auguste_Renoir.jpg'  mode='widthFix' src='/static/preset/Pierre_Auguste_Renoir.jpg'></image>
-      <image bindtap='selectPresetImage'  data-path='/static/preset/dt_mic.jpg'  mode='widthFix' src='/static/preset/dt_mic.jpg'></image>
+      <view class='img-col'>
+          <image wx:key='col0' wx:for="{{imageListCol0}}" bindtap='selectPresetImage' data-list='0' data-id='{{index}}' mode='widthFix' src='{{item.small}}' />
+      </view>
+      <view class='img-col'>
+        <image wx:key='col1' wx:for="{{imageListCol1}}" bindtap='selectPresetImage' data-list='1' data-id='{{index}}' mode='widthFix' src='{{item.small}}' />
+      </view>
     </scroll-view>
     <button data-type='album' class='m' bindtap='chooseImage'>选择照片</button>
     <button data-type='camera' class='m' bindtap='chooseImage'>拍摄照片</button>
     <button bindtap='closeChooseDialog'>关闭</button>
   </view>
+</view>
+<view id='ad-view'>
+<ad unit-id="adunit-6028c9ccc1e73bf1"></ad>
 </view>

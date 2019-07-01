@@ -1,2 +1,18 @@
 /**index.wxss**/
+page{
+  background: #1e756d;
+}
 
+.icon-loading{
+  animation:rotate 2s linear 0.5s infinite;
+}
+
+@keyframes rotate
+{
+0%   {transform:rotate(0.0deg);}
+18%  {transform:rotate(360.0deg);}
+25%  {transform:rotate(360.0deg);}
+50%  {transform:rotate(360.0deg);}
+75%  {transform:rotate(360.0deg);}
+100% {transform:rotate(360.0deg);}
+}

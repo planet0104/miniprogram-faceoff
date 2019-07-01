@@ -1,8 +1,8 @@
 {
-  "pages":[
+  "pages": [
     "pages/index/index"
   ],
-  "workers": "workers",
+  "cloud": true,
   "subpackages": [
     {
       "root": "faceoff",
@@ -11,10 +11,11 @@
       ]
     }
   ],
-  "window":{
-    "backgroundTextStyle":"light",
-    "navigationBarBackgroundColor": "#fff",
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#1e756d",
     "navigationBarTitleText": "趣图换脸",
-    "navigationBarTextStyle":"black"
-  }
+    "navigationBarTextStyle": "white"
+  },
+  "sitemapLocation": "sitemap.json"
 }

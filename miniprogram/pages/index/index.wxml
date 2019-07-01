@@ -1,5 +1,5 @@
 <!--index.wxml-->
 <view class="container">
-    <image style='margin-top:400rpx;width:100rpx;height:100rpx;' src='/static/loader.png'></image>
-    <text style="font-size:20rpx;margin-top:-25rpx;">正在启动</text>
+    <image class='icon-loading' style='margin-top:60%;width:60rpx;height:60rpx;' src='/static/hourglass.png'></image>
+    <text style="font-size:26rpx;color:white;padding-top:10rpx;">Loading...</text>
 </view>

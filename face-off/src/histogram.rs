@@ -246,8 +246,8 @@ impl ColorQuantizationHistogram {
                     do_loop = true;
                 } else {
                     //将较高的值移动到较低的集群：
-                    j += 1.0;//j<255.0后加的
-                    if j<255.0 && c[i].distance(j) < c[i + 1].distance(j) {
+                    j += 1.0; //j<255.0后加的
+                    if j < 255.0 && c[i].distance(j) < c[i + 1].distance(j) {
                         c[i].add(j, arr[j as usize] as f64);
                         c[i + 1].subtract(j, arr[j as usize] as f64);
                         c[i].max += 1.0;
