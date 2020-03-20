@@ -129,6 +129,3 @@
     <button bindtap='closeChooseDialog'>关闭</button>
   </view>
 </view>
-<view id='ad-view'>
-<ad unit-id="adunit-6028c9ccc1e73bf1"></ad>
-</view>

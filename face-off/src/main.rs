@@ -6,9 +6,10 @@ mod histogram;
 mod image_proc;
 mod imgtool;
 use crate::image_proc::{rotate_with_default, Interpolation};
-use image::{GenericImage, ImageBuffer, Pixel, Rgba};
+use image::{ColorType, ImageBuffer, Rgba};
 use std::ffi::CString;
 use std::os::raw::{c_char, c_double, c_float, c_int};
+use image::imageops::FilterType;
 
 //.\emsdk.bat install latest
 //.\emsdk.bat activate latest
@@ -100,7 +101,7 @@ fn run() {
     //初始化人脸识别器
     let mut detector = face_off::init_rustface(MODEL_DATA.to_vec()).unwrap();
     let famous: &[u8] = include_bytes!("../famous.jpg");
-    let users: &[u8] = include_bytes!("../user.jpg");
+    let users: &[u8] = include_bytes!("../th.jpg");
     let mut famous = image::load_from_memory(famous).unwrap().to_rgba();
 
     let (fw, fh) = (famous.width(), famous.height());
@@ -338,7 +339,7 @@ pub fn create_jpeg(
         src_image_data,
     )
     .unwrap();
-    println!("create_jpeg output_scale={}", output_scale);
+    // println!("create_jpeg output_scale={}", output_scale);
     //缩放
     let nwidth = src_image_width as f64 * output_scale;
     let nheight = src_image_height as f64 * output_scale;
@@ -346,7 +347,7 @@ pub fn create_jpeg(
         &image_data,
         nwidth as u32,
         nheight as u32,
-        image::FilterType::Nearest,
+        FilterType::Nearest,
     );
 
     let mut file = vec![];
@@ -354,7 +355,7 @@ pub fn create_jpeg(
         &image_data,
         image_data.width(),
         image_data.height(),
-        <Rgba<u8> as Pixel>::color_type(),
+        ColorType::Rgba8
     ) {
         Ok(()) => {
             let len = file.len();
@@ -408,7 +409,7 @@ pub fn create_png(
         &image_data,
         image_data.width(),
         image_data.height(),
-        <Rgba<u8> as Pixel>::color_type(),
+        ColorType::Rgba8,
     ) {
         Ok(()) => {
             let len = file.len();
@@ -548,7 +549,7 @@ pub fn resize_image(
         &raw_image,
         new_width as u32,
         new_height as u32,
-        image::FilterType::Nearest,
+        FilterType::Nearest,
     );
 
     let (w, h) = (new_image.width(), new_image.height());

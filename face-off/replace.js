@@ -6,8 +6,10 @@ var code = fs.readFileSync("./target/asmjs-unknown-emscripten/release/face-off.j
 var code = code.replace('Module["arguments"]=arguments', '');
 // //new_content = new_content.replace('ENVIRONMENT_IS_WORKER=typeof importScripts==="function";', '');
 // //new_content = new_content.replace('Module["arguments"]=arguments', '');
-// code = code.replace('ENVIRONMENT_IS_WEB=typeof window==="object";', 'ENVIRONMENT_IS_WEB=true;var document={};');
 // code = code.replace('FS.staticInit();__ATINIT__.unshift((function(){if(!Module["noFSInit"]&&!FS.init.initialized)FS.init()}));__ATMAIN__.push((function(){FS.ignorePermissions=false}));__ATEXIT__.push((function(){FS.quit()}));__ATINIT__.unshift((function(){TTY.init()}));__ATEXIT__.push((function(){TTY.shutdown()}));', '');
+
+//解决：str.charCodeAt is not a function
+code = code.replace('ENVIRONMENT_IS_WEB=typeof window==="object";', 'ENVIRONMENT_IS_WEB=true;var document={};');
 
 //处理图像加大内存(2的整数倍)
 code = code.replace('Module["TOTAL_STACK"]||5242880', 'Module["TOTAL_STACK"]||parseInt(5242880*6)');//栈内存总共30M

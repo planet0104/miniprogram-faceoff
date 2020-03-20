@@ -1,18 +1,18 @@
 [package]
 name = "face-off"
-version = "0.6.0"
+version = "0.7.0"
 authors = ["planet0104 <planet0104@gmail.com>"]
 edition = "2018"
 
 [dependencies]
 
 [target.'cfg(windows)'.dependencies]
-image = "0.21.2"
+image = "0.23.1"
 
 [target.'cfg(any(target_arch = "asmjs", target_arch = "wasm32"))'.dependencies]
 
 [target.'cfg(any(target_arch = "asmjs", target_arch = "wasm32"))'.dependencies.image]
-version = "0.21.2"
+version = "0.23.1"
 default-features = false
 features  = []
 
@@ -23,4 +23,4 @@ codegen-units = 1
 panic = 'abort'
 
 [build-dependencies]
-cc = "1.0"
+cc = "1.0.50"

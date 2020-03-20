@@ -1,11 +1,11 @@
 ﻿use super::detector::Detector;
-use super::{current_timestamp, show_loading};
+use super::current_timestamp;
 use crate::histogram;
-use crate::image_proc::{rotate_with_default, Interpolation};
+// use crate::image_proc::{rotate_with_default, Interpolation};
 use crate::imgtool;
 use image::imageops::resize;
-use image::{ConvertBuffer, GenericImage, GrayImage, ImageBuffer, Rgba, RgbaImage};
-use std::cmp::max;
+use image::{ConvertBuffer, GrayImage, ImageBuffer, Rgba, RgbaImage};
+use image::imageops::FilterType;
 use std::io;
 
 //初始化人脸识别器
@@ -133,7 +133,7 @@ pub fn detect_faces(
     raw_image: &RgbaImage,
     detector: &mut Detector,
     max_image_size: u32,
-) -> Vec<(Rectangle)> {
+) -> Vec<Rectangle> {
     let mut gray: GrayImage = raw_image.convert();
 
     if raw_image.width() > max_image_size || raw_image.height() > max_image_size {
@@ -234,7 +234,7 @@ pub fn resize_gray_image(raw_image: &GrayImage, max_size: f64) -> GrayImage {
         raw_image,
         new_width as u32,
         new_height as u32,
-        image::FilterType::Nearest,
+        FilterType::Nearest,
     )
 }
 

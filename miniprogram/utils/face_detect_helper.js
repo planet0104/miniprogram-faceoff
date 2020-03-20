@@ -34,9 +34,10 @@ module.exports = {
   // },
 
   //压缩图片
-  compressImage: function (maxWidth, maxHeight, path, canvasContext, callback) {
+  compressImage: function (maxWidth, maxHeight, path, canvasContext, callback, userChoose) {
     // let MAX_WIDTH = 1200.0;
     // let MAX_HEIGHT = 2000.0;
+    console.log("压缩图片:", path);
     let MAX_WIDTH = maxWidth;
     let MAX_HEIGHT = maxHeight;
     wx.getImageInfo({
@@ -65,26 +66,143 @@ module.exports = {
         // console.log("-------------绘制压缩图片:", new_width, new_height);
         canvasContext.drawImage(path, 0, 0, new_width, new_height);
         canvasContext.draw(false, function (res) {
-          // console.log("-------------压缩图片绘制成功:", res);
-          //绘制成功，获取图片数据
-          wx.canvasGetImageData({
-            canvasId: 'scale-canvas',
-            x: 0,
-            y: 0,
-            width: new_width,
-            height: new_height,
-            success(res) {
-              // console.log("-------------获取图片数据结果:", res);
-              callback(res);
-            },
-            fail(res) {
-              // console.log("-------------获取图片数据结果:", res);
-            }
-          })
+          if (userChoose){
+            //保存临时文件，使用imgSecCheck检查图片是否违规
+            wx.showLoading({
+              title: "开始验证图片",
+              mask: false,
+            });
+            wx.canvasToTempFilePath({
+              x: 0,
+              y: 0,
+              width: new_width,
+              height: new_height,
+              destWidth: new_width,
+              destHeight: new_height,
+              fileType: "jpg",
+              quality: 0.5,
+              canvasId: 'scale-canvas',
+              success(res) {
+                console.log("imgSecCheck临时文件保存成功", res.tempFilePath);
+                wx.showLoading({
+                  title: "正在验证图片",
+                  mask: false,
+                });
+                var tempFilePath = res.tempFilePath;
+                wx.getFileSystemManager().readFile({
+                  filePath: tempFilePath,
+                  success: function (res) {
+                    wx.showLoading({
+                      title: "正在验证图片",
+                      mask: false,
+                    });
+                    wx.cloud.callFunction({
+                      name: 'imgSecCheck',
+                      data: {
+                        imgType: tempFilePath.split('.').pop(),
+                        file: res.data
+                      },
+                      success(res) {
+                        console.log('图片审查结果', res)
+                        if (res.result.errCode == 0 || res.result.errCode == '0') {
+                          console.log('图片经过校验,没有违法违规');
+                          //绘制成功，获取图片数据
+                          wx.canvasGetImageData({
+                            canvasId: 'scale-canvas',
+                            x: 0,
+                            y: 0,
+                            width: new_width,
+                            height: new_height,
+                            success(res) {
+                              // console.log("-------------获取图片数据结果:", res);
+                              callback(res);
+                            },
+                            fail(res) {
+                              // console.log("-------------获取图片数据结果:", res);
+                            }
+                          });
+                        } else {
+                          callback();
+                          console.log('图片不合规, 提示用户');
+                          if (res.result.errCode == '87014') {
+                            wx.hideLoading();
+                            wx.showModal({
+                              content: '存在敏感内容，请更换图片',
+                              showCancel: false,
+                              confirmText: '我知道了'
+                            });
+                          } else {
+                            wx.hideLoading();
+                            wx.showModal({
+                              content: '图片不合规，请更换图片',
+                              showCancel: false,
+                              confirmText: '我知道了'
+                            })
+                          }
+                        }
+                      }, fail(res) {
+                        callback();
+                        console.log("图片验证失败", res);
+                        wx.hideLoading();
+                        wx.showModal({
+                          content: '图片不合规，请更换图片',
+                          showCancel: false,
+                          confirmText: '我知道了'
+                        });
+                      }
+                    });
+                  },
+                  fail: function (res) {
+                    wx.hideLoading();
+                    console.log(res);
+                    wx.showModal({
+                      content: '图片读取失败，请重试',
+                      showCancel: false,
+                      confirmText: '确定'
+                    });
+                  }
+                });
+              },
+              fail(res) {
+                console.log("imgSecCheck临时文件保存失败", res)
+                wx.hideLoading();
+                console.log(res);
+                wx.showModal({
+                  content: '临时文件保存失败，请重试',
+                  showCancel: false,
+                  confirmText: '确定'
+                });
+              }
+            });
+          }else{
+            console.log("compressImage 自带图片");
+            //绘制成功，获取图片数据
+            wx.canvasGetImageData({
+              canvasId: 'scale-canvas',
+              x: 0,
+              y: 0,
+              width: new_width,
+              height: new_height,
+              success(res) {
+                // console.log("-------------获取图片数据结果:", res);
+                callback(res);
+              },
+              fail(res) {
+                // console.log("-------------获取图片数据结果:", res);
+              }
+            });
+          }
         });
       },
       fail(res) {
         console.log("getImageInfo", res);
+        wx.hideLoading();
+        console.log(res);
+        wx.showModal({
+          content: '图片读取失败，请重试',
+          showCancel: false,
+          confirmText: '确定'
+        });
       }
     });
   },
@@ -119,10 +237,10 @@ module.exports = {
         // console.log("-------------绘制压缩图片:", new_width, new_height);
         canvasContext.drawImage(path, 0, 0, new_width, new_height);
 
-        var x = new_width * x_ratio;
-        var y = new_height * y_ratio;
-        var width = new_width * width_ratio;
-        var height = new_height * height_ratio;
+        var x = parseInt(new_width * x_ratio);
+        var y = parseInt(new_height * y_ratio);
+        var width = parseInt(new_width * width_ratio);
+        var height = parseInt(new_height * height_ratio);
 
         canvasContext.draw(false, function (res) {
           // console.log("-------------压缩图片绘制成功:", res);

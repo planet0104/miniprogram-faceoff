@@ -77,6 +77,12 @@ var selectBaseImage = {
   smallPath: null,
 };
 
+// 在页面中定义插屏广告
+let interstitialAd = null
+let nextShowTime = 0;
+//标记用户是否使用过，使用过才显示广告
+var savedPhoto = false;
+
 Page({
   data: {
     colorLevels: ['256色', '128色', '64色', '56色', '48色', '40色', '32色', '16色', '8色', '4色', '2色'],
@@ -459,14 +465,16 @@ Page({
   },
 
   //更新底图
-  updateBaseImage: function(){
+  updateBaseImage: function(userChoose){
     var page = this;
     wx.showLoading({
       title: '读取图片',
       mask: true
     });
-    page.setData({ currentBaseImageName: selectBaseImage.name, currentBaseImagePath: selectBaseImage.smallPath});
-    page.loadBaseImage(selectBaseImage.localPath, function () {
+    page.loadBaseImage(selectBaseImage.localPath, function (isError) {
+      if (!isError){
+        page.setData({ currentBaseImageName: selectBaseImage.name, currentBaseImagePath: selectBaseImage.smallPath });
+      }
       if (selectBaseImage.imageInfo && page.data.currentFrontImagePath != DEFAULT_HEAD_PATH) {
         page.setData({ imageTransX: 0.0, imageTransY: 0.0, dtRotateValue: 60, dtScaleValue: 30 });
         imageScale = 1.0;
@@ -477,7 +485,7 @@ Page({
       } else {
         wx.hideLoading();
       }
-    });
+    }, userChoose);
   },
 
   //事件处理函数
@@ -836,6 +844,11 @@ Page({
             //   console.log("头像拼接失败");
             // }
           });
+          savedPhoto = true;
+          wx.setStorage({
+            key: "savedPhoto",
+            data: true
+          });
         };
 
         //获取相册授权
@@ -891,7 +904,7 @@ Page({
               selectBaseImage.smallPath = res.tempFilePaths[0];
               selectBaseImage.bigPath = res.tempFilePaths[0];
               selectBaseImage.colorType = "0";
-              page.updateBaseImage();
+              page.updateBaseImage(true);
             }
           }else{
             var choosePath = res.tempFilePaths[0];
@@ -899,31 +912,75 @@ Page({
               title: '读取图片',
               mask: false
             });
-            page.setData({ showUserHeadImage: false, currentFrontImageName: app.getFileName(choosePath), currentFrontImagePath: choosePath },
-            function(){
-              page.loadFrontImage(choosePath, function () {
-                if (frontImage.imageInfo != null) {
-                  page.setData({ imageTransX: 0.0, imageTransY: 0.0, dtRotateValue: 60, dtScaleValue: 30 });
-                  imageScale = 1.0;
-                  imageRotate = 0.0;
-                  imageTransX = 0.0;
-                  imageTransY = 0.0;
-                  page.replaceHead();
-                } else
-                  wx.hideLoading();
-              });
-            });
+            page.loadFrontImage(choosePath, function () {
+              if (frontImage.imageInfo != null) {
+                page.setData({ showUserHeadImage: false, currentFrontImageName: app.getFileName(choosePath), currentFrontImagePath: choosePath },
+                  function () {
+                    page.setData({ imageTransX: 0.0, imageTransY: 0.0, dtRotateValue: 60, dtScaleValue: 30 });
+                    imageScale = 1.0;
+                    imageRotate = 0.0;
+                    imageTransX = 0.0;
+                    imageTransY = 0.0;
+                    page.replaceHead();
+                  });
+              } else{
+                wx.hideLoading();
+              }
+            }, true);
           }
         }
       }
     });
   },
 
+  onClose: function(){
+    nextShowTime = 0;
+  },
+
   onShow: function(){
-    
+    console.log("nextShowTime=", nextShowTime, "interstitialAd=", interstitialAd);
+    //1分钟显示一次广告
+    if (savedPhoto && new Date().getTime() > nextShowTime) {
+      if (interstitialAd) {
+        nextShowTime = new Date().getTime() + 1000 * 60;
+        interstitialAd.show().catch((err) => {
+          nextShowTime -= 1000 * 60;
+          console.error(err)
+        });
+      }
+    } else {
+      if (!savedPhoto) {
+        console.log("用户未使用，不显示广告");
+      } else {
+        console.log("时间未到，不显示广告");
+      }
+    }
   },
 
   onLoad: function (options) {
+    // 在页面onLoad回调事件中创建插屏广告实例
+    if (wx.createInterstitialAd) {
+      interstitialAd = wx.createInterstitialAd({
+        adUnitId: 'adunit-a0a266b12ccbff68'
+      })
+      interstitialAd.onLoad(() => { })
+      interstitialAd.onError((err) => { })
+      interstitialAd.onClose(() => { });
+      console.log("interstitialAd已经初始化", interstitialAd);
+    } else {
+      console.log("wx.createInterstitialAd不存在");
+    }
+    try {
+      try {
+        var value = wx.getStorageSync('savedPhoto')
+        if (value) {
+          savedPhoto = true;
+        }
+      } catch (e) {
+        console.log("配置文件读取失败", e);
+      }
+    } catch (e) { }
+
     canvasContext = wx.createCanvasContext("scale-canvas");
     //获取相册授权
     wx.getSetting({
@@ -988,21 +1045,31 @@ Page({
     });
   },
 
-  loadSmallImage: function (path, cb) {
+  loadSmallImage: function (path, cb, userChoose) {
     faceDetectHelper.compressImage(460.0, 460.0, path, canvasContext, function (res) {
-      cb({
-        imageData: res.data,
-        width: res.width,
-        height: res.height
-      });
-    });
+      console.log("压缩图片返回:", res);
+      if(res){
+        cb({
+          imageData: res.data,
+          width: res.width,
+          height: res.height
+        });
+      }else{
+        cb();
+      }
+    }, userChoose);
   },
 
   //读取前景图
-  loadFrontImage: function(path, cb){
+  //userChoose 是否为用户选择的图片，用户选择的图片要进行验证
+  loadFrontImage: function(path, cb, userChoose){
     frontImage.localPath = path;
     var page = this;
     this.loadSmallImage(path, function(data){
+      if(!data){
+        cb();
+        return;
+      }
       frontImage.imageInfo = data;
 
       //提取用户头像
@@ -1015,14 +1082,18 @@ Page({
         wx.hideLoading();
         cb();
       });
-    });
+    }, userChoose);
   },
 
   //读取底图
-  loadBaseImage: function(path, cb){
+  loadBaseImage: function (path, cb, userChoose){
     this.setData({ showLabelTip: false, showUserHeadImage: false});
     var page = this;
     this.loadSmallImage(path, function (data) {
+      if(!data){
+        cb(true);
+        return;
+      }
       selectBaseImage.imageInfo = data;
       //提取底图人脸
       wx.showLoading({
@@ -1040,11 +1111,11 @@ Page({
         wx.hideLoading();
 
         selectBaseImage.faceInfo = baseFaceInfo;
-        // console.log("底图人脸:", baseFaceInfo);
+        console.log("底图人脸:", baseFaceInfo);
         page.setImageBoxRect();
         cb();
       });
-    });
+    }, userChoose);
   },
 
   initOnce: function(){
@@ -1202,6 +1273,7 @@ Page({
     var height_ratio = face_rect.height/ height;
     imageLoader.getBigImagePath(bigPath, function (path) {
       faceDetectHelper.getSubImage(1200, 1200, path, x_ratio, y_ratio, width_ratio, height_ratio, canvasContext, function (imageInfo) {
+        console.log("大图人脸头像:", imageInfo);
         callback({
           imageInfo: {
             imageData: imageInfo.data,
@@ -1214,3 +1286,10 @@ Page({
     });
   }
 })
+/*
+
+1、选择前景图的时候，验证图片是否合规，即 loadFrontImage 方法中
+2、选择底图的时候，验证图片是否合规，即 updateBaseImage 方法中
+3、以上两个方法都调用了 loadSmallImage 方法，所以在此方法中验证就可以。
+4、loadSmallImage调用faceDetectHelper.compressImage，所以在faceDetectHelper.compressImage对图片进行验证
+ */
