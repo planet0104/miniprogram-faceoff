@@ -7,7 +7,7 @@ edition = "2018"
 [dependencies]
 
 [target.'cfg(windows)'.dependencies]
-image = "0.23.1"
+image = "0.23.12"
 
 [target.'cfg(any(target_arch = "asmjs", target_arch = "wasm32"))'.dependencies]
 
